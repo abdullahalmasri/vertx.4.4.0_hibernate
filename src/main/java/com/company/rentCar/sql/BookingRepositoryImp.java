@@ -1,12 +1,10 @@
 package com.company.rentCar.sql;
 
 import com.company.rentCar.model.Booking;
+import com.company.rentCar.model.Customer;
 import io.vertx.core.Future;
-import org.hibernate.SessionFactory;
 import org.hibernate.reactive.stage.Stage;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,19 +34,46 @@ public class BookingRepositoryImp implements BookingRepository {
       return Future.failedFuture(e);
     }
 
-//     List<Booking> bookingList = new ArrayList<>();
-//     bookingList.addAll(stage.getResultList());
-
-
   }
 
   @Override
   public Future<Booking> findByBookingId(UUID bookingId) {
+    try {
+      Booking booking=factory.withSession(
+        session -> session.find(Booking.class, bookingId))
+        .toCompletableFuture().join();
+      return Future.succeededFuture(booking);
+    }catch(Exception e) {
+      System.out.println(e.getMessage());
+      return Future.failedFuture(e);
+    }finally {
+      factory.close();
+    }
+
+  }
+
+  @Override
+  public Future<Booking> saveBooking(Booking booking) {
+    try {
+      factory.withTransaction(
+        (session, transaction) -> session.persist(booking)).toCompletableFuture().join();
+      return Future.succeededFuture(
+        booking
+        );
+
+    }catch (Exception e){
+      System.out.println(e.getMessage());
+      return Future.failedFuture(e);
+    }finally {
+      factory.close();
+    }
+
+  }
+
+  @Override
+  public Future<Booking> updateBooking(Booking booking) {
     return null;
   }
 
 
-  public void closeFactory() {
-    factory.close();
-  }
 }

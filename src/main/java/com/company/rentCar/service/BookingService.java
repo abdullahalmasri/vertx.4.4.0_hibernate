@@ -12,11 +12,11 @@ public interface BookingService {
 
   Future<List<BookingDTO>> findBookings();
 
-  Future<Booking> findBookingById(UUID bookId);
+  Future<BookingDTO> findBookingById(UUID bookId);
 
-  Future<BookingDTO> saveBooking(Booking booking);
+  Future<BookingDTO> saveBooking(BookingDTO booking);
 
-  Future<BookingDTO> updateBooking(Booking booking);
+  Future<BookingDTO> updateBooking(BookingDTO booking);
 
   Future<Void> deleteBooking(UUID bookId);
 

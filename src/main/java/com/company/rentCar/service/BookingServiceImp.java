@@ -27,25 +27,30 @@ public class BookingServiceImp  implements BookingService {
     repository.findAll().result().forEach(
       booking ->
         dtos.add(Mappers.getMapper(BookingMapper.class).bookingToBookingDTO(booking))
-//        System.out.println(booking);
-//        return d/tos;
-//      }
     );
     return Future.succeededFuture(dtos);
   }
 
   @Override
-  public Future<Booking> findBookingById(UUID bookId) {
-    return null;
+  public Future<BookingDTO> findBookingById(UUID bookId) {
+    BookingDTO dto = Mappers.getMapper(BookingMapper.class)
+      .bookingToBookingDTO(repository.findByBookingId(bookId).result());
+
+    return Future.succeededFuture(dto);
   }
 
   @Override
-  public Future<BookingDTO> saveBooking(Booking booking) {
-    return null;
+  public Future<BookingDTO> saveBooking(BookingDTO booking) {
+      if(booking.getBookingId()==null) {
+        booking.setBookingId(UUID.randomUUID());
+      }
+     repository.saveBooking(Mappers.getMapper(BookingMapper.class).bookingDTOToBooking(booking))
+      .result();
+    return Future.succeededFuture(booking);
   }
 
   @Override
-  public Future<BookingDTO> updateBooking(Booking booking) {
+  public Future<BookingDTO> updateBooking(BookingDTO booking) {
     return null;
   }
 

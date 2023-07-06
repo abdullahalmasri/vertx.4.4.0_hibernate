@@ -11,5 +11,8 @@ public interface BookingRepository {
   Future<List<Booking>> findAll();
 
  Future<Booking> findByBookingId(UUID bookingId);
-  void closeFactory();
+
+ Future<Booking> saveBooking(Booking booking);
+
+ Future<Booking> updateBooking(Booking booking);
 }

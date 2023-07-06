@@ -1,6 +1,7 @@
 package com.company.rentCar.router;
 
 import com.company.rentCar.data.BookingDTO;
+import com.company.rentCar.data.CustomerDTO;
 import com.company.rentCar.model.Booking;
 import com.company.rentCar.service.BookingService;
 import com.company.rentCar.service.BookingServiceImp;
@@ -14,6 +15,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.LoggerFormat;
 import io.vertx.ext.web.handler.LoggerHandler;
 import org.hibernate.reactive.stage.Stage;
@@ -21,13 +23,14 @@ import org.hibernate.reactive.stage.Stage;
 import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class BookingRouter extends AbstractVerticle {
   private static final String CONTENT_TYPE_HEADER = "Content-Type";
   private static final String APPLICATION_JSON = "application/json";
 //  private final BookingRepository repository;
   private final BookingService service;
-
+  private static final String ID_PARAMETER = "id";
 
   public BookingRouter(BookingService service) {
 //    this.repository = repository;
@@ -50,6 +53,26 @@ public class BookingRouter extends AbstractVerticle {
 //        repository.closeFactory();
       }
 
+    );
+    router.get("/booking/:id").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(
+      routingContext -> {
+        final String id = routingContext.pathParam(ID_PARAMETER);
+        BookingDTO bookingDTO = service.findBookingById(UUID.fromString(id)).result();
+        routingContext.response()
+          .setStatusCode(200)
+          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
+          .end(Json.encodePrettily(bookingDTO));
+      }
+    );
+    router.post("/booking").consumes(APPLICATION_JSON).handler(BodyHandler.create()).handler(
+      routingContext -> {
+        BookingDTO bookingDTO =
+        service.saveBooking(routingContext.body().asJsonObject().mapTo(BookingDTO.class)).result();
+        routingContext.response()
+          .setStatusCode(200)
+          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
+          .end(Json.encodePrettily(bookingDTO));
+      }
     );
 
     JsonObject config = config();
