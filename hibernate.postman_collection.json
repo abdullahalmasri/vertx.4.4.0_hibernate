@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "48707016-1a84-453f-ad09-1dd8efa4f2b5",
+		"name": "hibernate",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15049508"
+	},
+	"item": [
+		{
+			"name": "findAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/booking",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findbyid",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/booking/15e9517d-e617-4a4c-80e3-baea42824e32",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"booking",
+						"15e9517d-e617-4a4c-80e3-baea42824e32"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "save",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"bookingCarId\": \"15e9517d-e617-4a4c-80e3-baea42824e33\",\n    \"bookingCustomerId\": \"15e9517d-e617-4a4c-80e3-baea42824e31\",\n    \"bookingStart\": 1688486250000,\n    \"bookingEnd\": 1688486239000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/booking",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"bookingCarId\": \"15e9517d-e617-4a4c-80e3-baea42824e33\",\n    \"bookingCustomerId\": \"15e9517d-e617-4a4c-80e3-baea42824e31\",\n    \"bookingStart\": 1688486250000,\n    \"bookingEnd\": 1688486231911\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/booking/4ba97fcb-8bad-4d50-8ae2-8b2725c7980a",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"booking",
+						"4ba97fcb-8bad-4d50-8ae2-8b2725c7980a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/booking/4ba97fcb-8bad-4d50-8ae2-8b2725c7980a",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"booking",
+						"4ba97fcb-8bad-4d50-8ae2-8b2725c7980a"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
