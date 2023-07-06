@@ -2,10 +2,8 @@ package com.company.rentCar.service;
 
 import com.company.rentCar.data.BookingDTO;
 import com.company.rentCar.mapper.BookingMapper;
-import com.company.rentCar.model.Booking;
 import com.company.rentCar.sql.BookingRepository;
 import io.vertx.core.Future;
-import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;
@@ -15,7 +13,6 @@ import java.util.UUID;
 public class BookingServiceImp  implements BookingService {
 
   private final BookingRepository repository;
-  private BookingMapper mapper;
 
   public BookingServiceImp(BookingRepository repository) {
     this.repository = repository;
@@ -51,11 +48,16 @@ public class BookingServiceImp  implements BookingService {
 
   @Override
   public Future<BookingDTO> updateBooking(BookingDTO booking) {
-    return null;
+    if(booking.getBookingId()==null) {
+      return null;
+    }
+    repository.updateBooking(Mappers.getMapper(BookingMapper.class).bookingDTOToBooking(booking));
+    return Future.succeededFuture(booking);
   }
 
   @Override
   public Future<Void> deleteBooking(UUID bookId) {
-    return null;
+    repository.deleteBookingById(bookId);
+    return Future.succeededFuture();
   }
 }

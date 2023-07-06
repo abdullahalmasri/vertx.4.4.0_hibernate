@@ -74,6 +74,30 @@ public class BookingRouter extends AbstractVerticle {
           .end(Json.encodePrettily(bookingDTO));
       }
     );
+    router.put("/booking/:id").consumes(APPLICATION_JSON).handler(BodyHandler.create()).handler(
+      routingContext -> {
+        final String id = routingContext.pathParam(ID_PARAMETER);
+        BookingDTO bookingDTO =routingContext.body().asJsonObject().mapTo(BookingDTO.class);
+        bookingDTO.setBookingId(UUID.fromString(id));
+        bookingDTO=
+        service.updateBooking(bookingDTO).result();
+        routingContext.response()
+          .setStatusCode(200)
+          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
+          .end(Json.encodePrettily(bookingDTO));
+      }
+    );
+    router.delete("/booking/:id").handler(
+      routingContext -> {
+        final String id = routingContext.pathParam(ID_PARAMETER);
+
+        service.deleteBooking(UUID.fromString(id));
+        routingContext.response()
+          .setStatusCode(200)
+          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
+          .end(Json.encodePrettily(1));
+      }
+    );
 
     JsonObject config = config();
     Integer port = config.getInteger("port");

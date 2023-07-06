@@ -1,7 +1,6 @@
 package com.company.rentCar.sql;
 
 import com.company.rentCar.model.Booking;
-import com.company.rentCar.model.Customer;
 import io.vertx.core.Future;
 import org.hibernate.reactive.stage.Stage;
 
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.company.rentCar.Constrant.ConstrantQuery.SELECT_ALL_BOOKING;
+import static com.company.rentCar.Constrant.ConstrantQuery.*;
 
 public class BookingRepositoryImp implements BookingRepository {
 
@@ -23,7 +22,7 @@ public class BookingRepositoryImp implements BookingRepository {
   public Future<List<Booking>> findAll() {
     try {
       List<Booking> bookingList = new ArrayList<>();
-        factory.withSession(
+      factory.withSession(
         session -> session.createQuery(SELECT_ALL_BOOKING, Booking.class)
           .getResultList().thenAccept(bookingList::addAll)).toCompletableFuture().join();
 
@@ -32,6 +31,8 @@ public class BookingRepositoryImp implements BookingRepository {
     } catch (Exception e) {
       System.out.println(e.getMessage());
       return Future.failedFuture(e);
+    } finally {
+      factory.close();
     }
 
   }
@@ -39,14 +40,14 @@ public class BookingRepositoryImp implements BookingRepository {
   @Override
   public Future<Booking> findByBookingId(UUID bookingId) {
     try {
-      Booking booking=factory.withSession(
+      Booking booking = factory.withSession(
         session -> session.find(Booking.class, bookingId))
         .toCompletableFuture().join();
       return Future.succeededFuture(booking);
-    }catch(Exception e) {
+    } catch (Exception e) {
       System.out.println(e.getMessage());
       return Future.failedFuture(e);
-    }finally {
+    } finally {
       factory.close();
     }
 
@@ -59,20 +60,60 @@ public class BookingRepositoryImp implements BookingRepository {
         (session, transaction) -> session.persist(booking)).toCompletableFuture().join();
       return Future.succeededFuture(
         booking
-        );
+      );
 
-    }catch (Exception e){
+    } catch (Exception e) {
       System.out.println(e.getMessage());
       return Future.failedFuture(e);
-    }finally {
+    } finally {
       factory.close();
     }
 
   }
 
+  // not TypedQuery so need for .class
   @Override
   public Future<Booking> updateBooking(Booking booking) {
-    return null;
+    try {
+
+      factory.withTransaction((session, transaction) ->
+        session.createQuery("update Booking d set d.bookingCarId='"+booking.getBookingCarId()
+          +"',d.bookingCustomerId='"+booking.getBookingCustomerId()
+          +"',d.bookingStart='"+booking.getBookingStart().toString()+"',d.bookingEnd='"+ booking.getBookingEnd().toString()+"' where bookingId ='"+booking.getBookingId()+"'")
+          .executeUpdate()
+
+      ).toCompletableFuture().join();
+      return Future.succeededFuture(booking);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return Future.failedFuture(e);
+    } finally {
+      factory.close();
+    }
+  }
+
+  // not TypedQuery so need for .class
+  @Override
+  public Future<Void> deleteBookingById(UUID bookingId) {
+    try {
+      int deleted = factory.withTransaction(
+        (session, tx) -> session.createQuery(DELETE_BOOKING + bookingId+"'").executeUpdate()
+
+      )
+        .toCompletableFuture().join();
+      if (deleted == 1) {
+        System.out.println("yes");
+      }
+      return Future.succeededFuture(
+
+      );
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return Future.failedFuture(e);
+    } finally {
+      factory.close();
+    }
+
   }
 
 
