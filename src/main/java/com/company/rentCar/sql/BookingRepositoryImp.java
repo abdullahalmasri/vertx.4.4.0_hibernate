@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.company.rentCar.Constrant.ConstrantQuery.*;
+import static com.company.rentCar.Constrant.ConstrantQuery.DELETE_BOOKING;
+import static com.company.rentCar.Constrant.ConstrantQuery.SELECT_ALL_BOOKING;
 
 public class BookingRepositoryImp implements BookingRepository {
 
@@ -77,9 +78,11 @@ public class BookingRepositoryImp implements BookingRepository {
     try {
 
       factory.withTransaction((session, transaction) ->
-        session.createQuery("update Booking d set d.bookingCarId='"+booking.getBookingCarId()
-          +"',d.bookingCustomerId='"+booking.getBookingCustomerId()
-          +"',d.bookingStart='"+booking.getBookingStart().toString()+"',d.bookingEnd='"+ booking.getBookingEnd().toString()+"' where bookingId ='"+booking.getBookingId()+"'")
+        session.createQuery("update Booking d set d.bookingCarId='" + booking.getBookingCarId()
+          + "',d.bookingCustomerId='" + booking.getBookingCustomerId()
+          + "',d.bookingStart='" + booking.getBookingStart().toString() +
+          "',d.bookingEnd='" + booking.getBookingEnd().toString() +
+          "' where bookingId ='" + booking.getBookingId() + "'")
           .executeUpdate()
 
       ).toCompletableFuture().join();
@@ -97,7 +100,7 @@ public class BookingRepositoryImp implements BookingRepository {
   public Future<Void> deleteBookingById(UUID bookingId) {
     try {
       int deleted = factory.withTransaction(
-        (session, tx) -> session.createQuery(DELETE_BOOKING + bookingId+"'").executeUpdate()
+        (session, tx) -> session.createQuery(DELETE_BOOKING + bookingId + "'").executeUpdate()
 
       )
         .toCompletableFuture().join();
@@ -115,6 +118,31 @@ public class BookingRepositoryImp implements BookingRepository {
     }
 
   }
+
+//  @Override
+//  public Future<BookingDetails> findBookingDetailsById(UUID bookingId) {
+
+//    try {
+//      Object o = factory.withSession(session ->
+//        session.createQuery(
+//          "SELECT b.bookingId,c.customerId,cc.carId,b.bookingStart,b.bookingEnd," +
+//            "cc.carModel,cc.pricePerDay,cc.carType,cc.carAvailability" +
+//            ",c.customerName,c.customerEmail,c.customerPhone,c.customerDriverLicense,c.customerBirth " +
+//            "from Booking b INNER join Customer  c ON " +
+//            "b.bookingCustomerId=c.customerId " +
+//            "INNER join Car cc ON b.bookingCarId=cc.carId " +
+//            "where b.bookingId='" + bookingId + "'")
+//      ).toCompletableFuture().get();
+
+
+//      return Future.succeededFuture(bookingDetails);
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//      return Future.failedFuture(e);
+//    } finally {
+//      factory.close();
+//    }
+//  }
 
 
 }

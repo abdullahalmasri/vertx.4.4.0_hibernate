@@ -1,6 +1,7 @@
 package com.company.rentCar.service;
 
 import com.company.rentCar.data.BookingDTO;
+import com.company.rentCar.data.BookingDetails;
 import com.company.rentCar.mapper.BookingMapper;
 import com.company.rentCar.sql.BookingRepository;
 import io.vertx.core.Future;
@@ -59,5 +60,12 @@ public class BookingServiceImp  implements BookingService {
   public Future<Void> deleteBooking(UUID bookId) {
     repository.deleteBookingById(bookId);
     return Future.succeededFuture();
+  }
+
+  @Override
+  public Future<BookingDetails> findDetails(UUID bookId) {
+    BookingDetails bookingDetails = repository.findBookingDetailsById(bookId).result();
+//    bookingDetails.setBookingId();
+    return null;
   }
 }

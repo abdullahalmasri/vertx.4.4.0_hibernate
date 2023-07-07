@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.company.rentCar.Constrant.ConstrantQuery.SELECT_ALL_Customer;
-import static org.hibernate.reactive.stage.Stage.fetch;
+import static com.company.rentCar.Constrant.ConstrantQuery.DELETE_CUSTOMER;
+import static com.company.rentCar.Constrant.ConstrantQuery.SELECT_ALL_CUSTOMER;
 
 public class CustomerRepositoryImp implements CustomerRepository {
 
@@ -26,7 +26,7 @@ public class CustomerRepositoryImp implements CustomerRepository {
     try {
       List<Customer> customers = new ArrayList<>();
       factory.withSession(
-        session -> session.createQuery(SELECT_ALL_Customer,Customer.class)
+        session -> session.createQuery(SELECT_ALL_CUSTOMER,Customer.class)
         .getResultList().thenAccept(customers::addAll)
       ).toCompletableFuture().join();
       return Future.succeededFuture(customers);
@@ -57,16 +57,56 @@ public class CustomerRepositoryImp implements CustomerRepository {
 
   @Override
   public Future<Customer> saveCustomer(Customer customer) {
-    return null;
+
+    try {
+      factory.withTransaction((session, transaction) ->
+        session.persist(Customer.class, customer)).toCompletableFuture().join();
+      return Future.succeededFuture(customer);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Future.failedFuture(e);
+    } finally {
+      factory.close();
+    }
   }
 
   @Override
   public Future<Customer> updateCustomer(Customer customer) {
-    return null;
+
+    try {
+      factory.withTransaction((session, transaction) ->
+        session.createQuery("update Customer c set c.customerName=" +customer.getCustomerName()+
+          ",c.customerEmail=" +customer.getCustomerEmail()+
+          ",c.customerPhone=" + customer.getCustomerPhone()+
+          ",c.customerDriverLicense=" +customer.getCustomerDriverLicense()+
+          ",c.customerBirth= " +customer.getCustomerBirth()+
+          " where c.customerId='"+customer.getCustomerId()+"'")
+        .executeUpdate()
+      ).toCompletableFuture().join();
+      return Future.succeededFuture(customer);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Future.failedFuture(e);
+    } finally {
+      factory.close();
+    }
   }
 
   @Override
   public Future<Void> deleteCustomer(UUID customerId) {
-    return null;
+
+    try {
+      int deleted = factory.withTransaction((session, transaction) -> session.createQuery(DELETE_CUSTOMER)
+        .executeUpdate()).toCompletableFuture().join();
+      if (deleted == 1) {
+        System.out.println("deleted customer");
+      }
+      return Future.succeededFuture();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Future.failedFuture(e);
+    } finally {
+      factory.close();
+    }
   }
 }

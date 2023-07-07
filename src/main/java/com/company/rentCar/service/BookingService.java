@@ -1,6 +1,7 @@
 package com.company.rentCar.service;
 
 import com.company.rentCar.data.BookingDTO;
+import com.company.rentCar.data.BookingDetails;
 import com.company.rentCar.model.Booking;
 import io.vertx.core.Future;
 
@@ -19,5 +20,7 @@ public interface BookingService {
   Future<BookingDTO> updateBooking(BookingDTO booking);
 
   Future<Void> deleteBooking(UUID bookId);
+
+  Future<BookingDetails> findDetails(UUID bookId);
 
 }

@@ -17,9 +17,6 @@ public class BookingHandler {
     this.repository = repository;
   }
   public Future<List<Booking>> readAll(RoutingContext rc) {
-//    final String page = rc.queryParams().get(PAGE_PARAMETER);
-//    final String limit = rc.queryParams().get(LIMIT_PARAMETER);
-
      return repository.findAll()
       .onSuccess(success -> ResponseUtils.buildOkResponse(rc,success));
   }

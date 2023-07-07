@@ -1,6 +1,7 @@
 package com.company.rentCar.router;
 
 import com.company.rentCar.data.BookingDTO;
+import com.company.rentCar.data.BookingDetails;
 import com.company.rentCar.data.CustomerDTO;
 import com.company.rentCar.model.Booking;
 import com.company.rentCar.service.BookingService;
@@ -96,6 +97,16 @@ public class BookingRouter extends AbstractVerticle {
           .setStatusCode(200)
           .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
           .end(Json.encodePrettily(1));
+      }
+    );
+    router.get("/booking/details/:id").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(
+      routingContext -> {
+        final String id = routingContext.pathParam(ID_PARAMETER);
+        BookingDetails bookingDetails = service.findDetails(UUID.fromString(id)).result();
+        routingContext.response()
+          .setStatusCode(200)
+          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
+          .end(Json.encodePrettily(bookingDetails));
       }
     );
 
