@@ -2,6 +2,9 @@ package com.company.rentCar.Constrant;
 
 public class ConstrantQuery {
 
+  //handler Constrants
+  public static final String ID_PARAMETER = "id";
+
 
   // Sql Statements for Booking table
 

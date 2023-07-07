@@ -2,6 +2,7 @@ package com.company.rentCar.router;
 
 import com.company.rentCar.data.BookingDTO;
 import com.company.rentCar.data.BookingDetails;
+import com.company.rentCar.handler.BookingHandler;
 import com.company.rentCar.service.BookingService;
 import com.company.rentCar.service.BookingServiceImp;
 import com.company.rentCar.sql.BookingRepository;
@@ -23,15 +24,18 @@ import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class BookingRouter extends AbstractVerticle {
   private static final String CONTENT_TYPE_HEADER = "Content-Type";
   private static final String APPLICATION_JSON = "application/json";
   private final BookingService service;
   private static final String ID_PARAMETER = "id";
+  private final BookingHandler handler;
 
-  public BookingRouter(BookingService service) {
+  public BookingRouter(BookingService service,BookingHandler handler) {
     this.service = service;
+    this.handler=handler;
   }
 
   @Override
@@ -39,37 +43,10 @@ public class BookingRouter extends AbstractVerticle {
     HttpServer server = vertx.createHttpServer();
     final Router router = Router.router(vertx);
     router.route("/booking").handler(LoggerHandler.create());
-    router.get("/booking").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(
-      routingContext -> {
-        List<BookingDTO> bookingList = new ArrayList<>();
-        service.findBookings().onSuccess(bookingList::addAll);
-        routingContext.response()
-          .setStatusCode(200)
-          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
-          .end(Json.encodePrettily(bookingList));
-//        repository.closeFactory();
-      }
-
-    );
-    router.get("/booking/:id").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(
-      routingContext -> {
-        final String id = routingContext.pathParam(ID_PARAMETER);
-        BookingDTO bookingDTO = service.findBookingById(UUID.fromString(id)).result();
-        routingContext.response()
-          .setStatusCode(200)
-          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
-          .end(Json.encodePrettily(bookingDTO));
-      }
-    );
+    router.get("/booking").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(handler::readAll);
+    router.get("/booking/:id").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(handler::readOne);
     router.post("/booking").consumes(APPLICATION_JSON).handler(BodyHandler.create()).handler(
-      routingContext -> {
-        BookingDTO bookingDTO =
-        service.saveBooking(routingContext.body().asJsonObject().mapTo(BookingDTO.class)).result();
-        routingContext.response()
-          .setStatusCode(200)
-          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
-          .end(Json.encodePrettily(bookingDTO));
-      }
+      handler::create
     );
     router.put("/booking/:id").consumes(APPLICATION_JSON).handler(BodyHandler.create()).handler(
       routingContext -> {
@@ -117,9 +94,9 @@ public class BookingRouter extends AbstractVerticle {
 
 
     public static void main(String[] args) {
-      System.out.println(args);
 
-      Stage.SessionFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName(args)).unwrap(Stage.SessionFactory.class);
+      Stage.SessionFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName(args))
+        .unwrap(Stage.SessionFactory.class);
 //      EntityManager entityManager = emf.createEntityManager();
 //      Session session = entityManager.unwrap(org.hibernate.Session.class);
 //      SessionFactory factory = session.getSessionFactory();
@@ -151,9 +128,10 @@ public class BookingRouter extends AbstractVerticle {
 
     // 4. Project service
     BookingService projectService = new BookingServiceImp(projectRepository);
+    BookingHandler bookingHandler = new BookingHandler(projectService);
 
     // 5. WebVerticle
-    BookingRouter verticle = new BookingRouter(projectService);
+    BookingRouter verticle = new BookingRouter(projectService,bookingHandler);
 
     DeploymentOptions options = new DeploymentOptions();
     JsonObject config = new JsonObject();
