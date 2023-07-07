@@ -65,7 +65,6 @@ public class BookingServiceImp  implements BookingService {
   @Override
   public Future<BookingDetails> findDetails(UUID bookId) {
     BookingDetails bookingDetails = repository.findBookingDetailsById(bookId).result();
-//    bookingDetails.setBookingId();
-    return null;
+    return Future.succeededFuture(bookingDetails);
   }
 }

@@ -1,5 +1,6 @@
 package com.company.rentCar.sql;
 
+import com.company.rentCar.data.BookingDetails;
 import com.company.rentCar.model.Booking;
 import io.vertx.core.Future;
 
@@ -18,5 +19,6 @@ public interface BookingRepository {
 
  Future<Void> deleteBookingById(UUID bookingId);
 
-// Future<BookingDetails> findBookingDetailsById(UUID bookingId);
+ Future<BookingDetails> findBookingDetailsById(UUID bookingId);
 }
+

@@ -1,5 +1,6 @@
 package com.company.rentCar.sql;
 
+import com.company.rentCar.data.BookingDetails;
 import com.company.rentCar.model.Booking;
 import io.vertx.core.Future;
 import org.hibernate.reactive.stage.Stage;
@@ -119,30 +120,31 @@ public class BookingRepositoryImp implements BookingRepository {
 
   }
 
-//  @Override
-//  public Future<BookingDetails> findBookingDetailsById(UUID bookingId) {
+  @Override
+  public Future<BookingDetails> findBookingDetailsById(UUID bookingId) {
 
-//    try {
-//      Object o = factory.withSession(session ->
-//        session.createQuery(
-//          "SELECT b.bookingId,c.customerId,cc.carId,b.bookingStart,b.bookingEnd," +
-//            "cc.carModel,cc.pricePerDay,cc.carType,cc.carAvailability" +
-//            ",c.customerName,c.customerEmail,c.customerPhone,c.customerDriverLicense,c.customerBirth " +
-//            "from Booking b INNER join Customer  c ON " +
-//            "b.bookingCustomerId=c.customerId " +
-//            "INNER join Car cc ON b.bookingCarId=cc.carId " +
-//            "where b.bookingId='" + bookingId + "'")
-//      ).toCompletableFuture().get();
+    try {
+      BookingDetails bookingDetails =
+       factory.withSession(session ->
+        session.createQuery(
+          "SELECT new com.company.rentCar.data.BookingDetails(b.bookingId,c.customerId,cc.carId,b.bookingStart,b.bookingEnd," +
+            "cc.carModel,cc.pricePerDay,cc.carType,cc.carAvailability" +
+            ",c.customerName,c.customerEmail,c.customerPhone,c.customerDriverLicense,c.customerBirth" +
+            ") from Booking b INNER join Customer  c ON " +
+            "b.bookingCustomerId=c.customerId " +
+            "INNER join Car cc ON b.bookingCarId=cc.carId " +
+            "where b.bookingId='" + bookingId + "'",BookingDetails.class).getSingleResult()
+      ).toCompletableFuture().join();
 
 
-//      return Future.succeededFuture(bookingDetails);
-//    } catch (Exception e) {
-//      e.printStackTrace();
-//      return Future.failedFuture(e);
-//    } finally {
-//      factory.close();
-//    }
-//  }
+      return Future.succeededFuture(bookingDetails);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Future.failedFuture(e);
+    } finally {
+      factory.close();
+    }
+  }
 
 
 }

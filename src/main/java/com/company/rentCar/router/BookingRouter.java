@@ -2,8 +2,6 @@ package com.company.rentCar.router;
 
 import com.company.rentCar.data.BookingDTO;
 import com.company.rentCar.data.BookingDetails;
-import com.company.rentCar.data.CustomerDTO;
-import com.company.rentCar.model.Booking;
 import com.company.rentCar.service.BookingService;
 import com.company.rentCar.service.BookingServiceImp;
 import com.company.rentCar.sql.BookingRepository;
@@ -29,12 +27,10 @@ import java.util.UUID;
 public class BookingRouter extends AbstractVerticle {
   private static final String CONTENT_TYPE_HEADER = "Content-Type";
   private static final String APPLICATION_JSON = "application/json";
-//  private final BookingRepository repository;
   private final BookingService service;
   private static final String ID_PARAMETER = "id";
 
   public BookingRouter(BookingService service) {
-//    this.repository = repository;
     this.service = service;
   }
 
