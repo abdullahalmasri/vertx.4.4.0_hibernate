@@ -18,9 +18,9 @@
                 value="jdbc:postgresql://localhost:5432/hibernatedb"/>
 
       <!-- Credentials -->
-      <property name="jakarta.persistence.jdbc.user"
+      <property name="javax.persistence.jdbc.user"
                 value="postgres"/>
-      <property name="jakarta.persistence.jdbc.password"
+      <property name="javax.persistence.jdbc.password"
                 value="postgres"/>
 
       <!-- The Vert.x SQL Client connection pool size -->
