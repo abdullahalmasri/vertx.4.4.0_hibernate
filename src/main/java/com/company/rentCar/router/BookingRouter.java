@@ -1,7 +1,5 @@
 package com.company.rentCar.router;
 
-import com.company.rentCar.data.BookingDTO;
-import com.company.rentCar.data.BookingDetails;
 import com.company.rentCar.handler.BookingHandler;
 import com.company.rentCar.service.BookingService;
 import com.company.rentCar.service.BookingServiceImp;
@@ -9,10 +7,7 @@ import com.company.rentCar.sql.BookingRepository;
 import com.company.rentCar.sql.BookingRepositoryImp;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -21,140 +16,78 @@ import io.vertx.ext.web.handler.LoggerHandler;
 import org.hibernate.reactive.stage.Stage;
 
 import javax.persistence.Persistence;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
-public class BookingRouter extends AbstractVerticle {
-  private static final String CONTENT_TYPE_HEADER = "Content-Type";
+public class BookingRouter {
   private static final String APPLICATION_JSON = "application/json";
-  private final BookingService service;
-  private static final String ID_PARAMETER = "id";
   private final BookingHandler handler;
+  private final Vertx vertx;
 
-  public BookingRouter(BookingService service,BookingHandler handler) {
-    this.service = service;
-    this.handler=handler;
+  public BookingRouter(BookingHandler handler, Vertx vertx) {
+    this.handler = handler;
+    this.vertx = vertx;
   }
 
-  @Override
-  public void start(Promise<Void> startPromise) throws Exception {
-    HttpServer server = vertx.createHttpServer();
+  public void setRouter(Router router) {
+    router.mountSubRouter("/", buildBookRouter());
+  }
+
+  private Router buildBookRouter() {
     final Router router = Router.router(vertx);
-    router.route("/booking").handler(LoggerHandler.create());
-    router.get("/booking").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(handler::readAll);
-    router.get("/booking/:id").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(handler::readOne);
-    router.post("/booking").consumes(APPLICATION_JSON).handler(BodyHandler.create()).handler(
+    router.route("booking").handler(LoggerHandler.create());
+    router.get("booking").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(handler::readAll);
+    router.get("booking/:id").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(handler::readOne);
+    router.post("booking").consumes(APPLICATION_JSON).handler(BodyHandler.create()).handler(
       handler::create
     );
-    router.put("/booking/:id").consumes(APPLICATION_JSON).handler(BodyHandler.create()).handler(
-      routingContext -> {
-        final String id = routingContext.pathParam(ID_PARAMETER);
-        BookingDTO bookingDTO =routingContext.body().asJsonObject().mapTo(BookingDTO.class);
-        bookingDTO.setBookingId(UUID.fromString(id));
-        bookingDTO=
-        service.updateBooking(bookingDTO).result();
-        routingContext.response()
-          .setStatusCode(200)
-          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
-          .end(Json.encodePrettily(bookingDTO));
-      }
+    router.put("booking/:id").consumes(APPLICATION_JSON).handler(BodyHandler.create()).handler(
+      handler::update
     );
-    router.delete("/booking/:id").handler(
-      routingContext -> {
-        final String id = routingContext.pathParam(ID_PARAMETER);
-
-        service.deleteBooking(UUID.fromString(id));
-        routingContext.response()
-          .setStatusCode(200)
-          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
-          .end(Json.encodePrettily(1));
-      }
+    router.delete("booking/:id").handler(
+      handler::delete
     );
-    router.get("/booking/details/:id").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(
-      routingContext -> {
-        final String id = routingContext.pathParam(ID_PARAMETER);
-        BookingDetails bookingDetails = service.findDetails(UUID.fromString(id)).result();
-        routingContext.response()
-          .setStatusCode(200)
-          .putHeader(CONTENT_TYPE_HEADER, APPLICATION_JSON)
-          .end(Json.encodePrettily(bookingDetails));
-      }
+    router.get("booking/details/:id").handler(LoggerHandler.create(LoggerFormat.DEFAULT)).handler(
+      handler::getDetails
     );
 
-    JsonObject config = config();
-    Integer port = config.getInteger("port");
-    server.requestHandler(router).listen(port)
-      .onSuccess(result -> startPromise.complete())
-      .onFailure(err -> startPromise.fail(err));
+    return router;
 
   }
 
 
-
-    public static void main(String[] args) {
-
-      Stage.SessionFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName(args))
-        .unwrap(Stage.SessionFactory.class);
-//      EntityManager entityManager = emf.createEntityManager();
-//      Session session = entityManager.unwrap(org.hibernate.Session.class);
-//      SessionFactory factory = session.getSessionFactory();
-    // 1. Hibernate configuration
-//    Properties hibernateProps = new Properties();
-//    String url = "jdbc:postgresql://localhost:5432/hibernatedb";
-//    hibernateProps.put("hibernate.connection.url", url);
-//    hibernateProps.put("hibernate.connection.username", "postgres");
-//    hibernateProps.put("hibernate.connection.password", "postgres");
-//    hibernateProps.put("javax.persistence.schema-generation.database.action", "create");
-//    hibernateProps.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL95Dialect");
-//    Configuration hibernateConfiguration = new Configuration();
-//    hibernateConfiguration.setProperties(hibernateProps);
-//    hibernateConfiguration.addAnnotatedClass(Booking.class);
-////    hibernateConfiguration.addAnnotatedClass(Project.class);
+//  public static void main(String[] args) {
 //
-//    // 2. Session factroy
-//    ServiceRegistry serviceRegistry = new ReactiveServiceRegistryBuilder()
-//      .applySettings(hibernateConfiguration.getProperties()).build();
+//    Stage.SessionFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName(args))
+//      .unwrap(Stage.SessionFactory.class);
+//    // 3. Project repository
+//    BookingRepository projectRepository = new BookingRepositoryImp(emf);
 //
-//    sessionFactory = hibernateConfiguration
-//      .buildSessionFactory(serviceRegistry).unwrap(Stage.SessionFactory.class);
+//    // 4. Project service
+//    BookingService projectService = new BookingServiceImp(projectRepository);
+//    BookingHandler bookingHandler = new BookingHandler(projectService);
 //
-//      Configuration configuration = new Configuration();
-//      configuration.configure();
-//      System.out.println("the congiguration is "+sessionFactory);
-    // 3. Project repository
-    BookingRepository projectRepository = new BookingRepositoryImp(emf);
-
-    // 4. Project service
-    BookingService projectService = new BookingServiceImp(projectRepository);
-    BookingHandler bookingHandler = new BookingHandler(projectService);
-
-    // 5. WebVerticle
-    BookingRouter verticle = new BookingRouter(projectService,bookingHandler);
-
-    DeploymentOptions options = new DeploymentOptions();
-    JsonObject config = new JsonObject();
-    config.put("port", 8888);
-    options.setConfig(config);
-
-    Vertx vertx = Vertx.vertx();
-    vertx.deployVerticle(verticle, options).onFailure(err -> err.printStackTrace())
-      .onSuccess(res -> {
-        System.out.println(res);
-        System.out.println("Application is up and running");
-      });
-  }
-
-
-  /**
-   * Return the persistence unit name to use in the example.
-   *
-   * @param args the first element is the persistence unit name if present
-   * @return the selected persistence unit name or the default one
-   */
-  public static String persistenceUnitName(String[] args) {
-    return args.length > 0 ? args[0] : "postgresql-example";
-  }
-
+//    // 5. WebVerticle
+//    BookingRouter verticle = new BookingRouter(bookingHandler);
+//
+//
+////    Vertx vertx = Vertx.vertx();
+////    vertx.deployVerticle(verticle, options)
+////      .onFailure(err -> err.printStackTrace())
+////      .onSuccess(res -> {
+////        System.out.println(res);
+////        System.out.println("Application is up and running");
+////      });
+//  }
+//
+//
+//  /**
+//   * Return the persistence unit name to use in the example.
+//   *
+//   * @param args the first element is the persistence unit name if present
+//   * @return the selected persistence unit name or the default one
+//   */
+//  public static String persistenceUnitName(String[] args) {
+//    return args.length > 0 ? args[0] : "postgresql-example";
+//  }
+//
+//}
 }

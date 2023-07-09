@@ -1,7 +1,7 @@
 package com.company.rentCar.handler;
 
 import com.company.rentCar.data.BookingDTO;
-import com.company.rentCar.model.Booking;
+import com.company.rentCar.data.BookingDetails;
 import com.company.rentCar.service.BookingService;
 import com.company.rentCar.utils.ResponseUtils;
 import io.vertx.core.Future;
@@ -45,7 +45,10 @@ public class BookingHandler {
   }
 
   public Future<BookingDTO> update(RoutingContext rc) {
-    return service.updateBooking(rc.body().asJsonObject().mapTo(BookingDTO.class))
+    UUID bookingId = UUID.fromString(getId(rc));
+    BookingDTO dto = rc.body().asJsonObject().mapTo(BookingDTO.class);
+    dto.setBookingId(bookingId);
+    return service.updateBooking(dto)
       .onSuccess(success -> ResponseUtils.buildOkResponse(rc, success))
       .onFailure(failure -> ResponseUtils.buildErrorResponse(rc, failure));
   }
@@ -55,6 +58,12 @@ public class BookingHandler {
     service.deleteBooking(UUID.fromString(getId(rc)))
       .onSuccess(success -> ResponseUtils.buildOkResponse(rc, success))
       .onFailure(failure -> ResponseUtils.buildErrorResponse(rc, failure));
+  }
+
+  public Future<BookingDetails> getDetails(RoutingContext rc) {
+    return service.findDetails(UUID.fromString(getId(rc)))
+      .onSuccess(success -> ResponseUtils.buildOkResponse(rc,success))
+      .onFailure(failure -> ResponseUtils.buildErrorResponse(rc,failure));
   }
 
   private String getId(RoutingContext rc) {
