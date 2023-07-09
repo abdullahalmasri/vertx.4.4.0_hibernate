@@ -1,21 +1,11 @@
 package com.company.rentCar.router;
 
 import com.company.rentCar.handler.BookingHandler;
-import com.company.rentCar.service.BookingService;
-import com.company.rentCar.service.BookingServiceImp;
-import com.company.rentCar.sql.BookingRepository;
-import com.company.rentCar.sql.BookingRepositoryImp;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.LoggerFormat;
 import io.vertx.ext.web.handler.LoggerHandler;
-import org.hibernate.reactive.stage.Stage;
-
-import javax.persistence.Persistence;
 
 public class BookingRouter {
   private static final String APPLICATION_JSON = "application/json";
