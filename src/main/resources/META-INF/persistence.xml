@@ -6,7 +6,10 @@
   <persistence-unit name="postgresql-example">
     <provider>org.hibernate.reactive.provider.ReactivePersistenceProvider</provider>
 
+
     <class>com.company.rentCar.model.Booking</class>
+    <class>com.company.rentCar.model.Customer</class>
+    <class>com.company.rentCar.model.Car</class>
 
     <properties>
 
