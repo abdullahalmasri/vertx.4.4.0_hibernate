@@ -8,6 +8,7 @@ import org.hibernate.reactive.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.company.rentCar.Constrant.ConstrantQuery.DELETE_BOOKING;
 import static com.company.rentCar.Constrant.ConstrantQuery.SELECT_ALL_BOOKING;
@@ -73,7 +74,7 @@ public class BookingRepositoryImp implements BookingRepository {
 
   }
 
-  // not TypedQuery so need for .class
+  // not TypedQuery so no need for .class
   @Override
   public Future<Booking> updateBooking(Booking booking) {
     try {
@@ -96,7 +97,7 @@ public class BookingRepositoryImp implements BookingRepository {
     }
   }
 
-  // not TypedQuery so need for .class
+  // not TypedQuery so no need for .class
   @Override
   public Future<Void> deleteBookingById(UUID bookingId) {
     try {
