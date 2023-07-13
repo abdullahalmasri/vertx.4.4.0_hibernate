@@ -1,112 +1,102 @@
 package com.company.rentCar.sql;
 
 import com.company.rentCar.model.Customer;
-import io.vertx.core.Future;
-import org.hibernate.reactive.stage.Stage;
+import io.smallrye.mutiny.Uni;
+import org.hibernate.reactive.mutiny.Mutiny;
 
-import java.util.ArrayList;
+import javax.persistence.Persistence;
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 import static com.company.rentCar.Constrant.ConstrantQuery.DELETE_CUSTOMER;
 import static com.company.rentCar.Constrant.ConstrantQuery.SELECT_ALL_CUSTOMER;
 
-public class CustomerRepositoryImp implements CustomerRepository {
+/**
+ * The type Customer repository imp.
+ */
+public class CustomerRepositoryImp implements CustomerRepository, Serializable {
 
+  private static final long serialVersionUID = 90908L;
 
+  private final Mutiny.SessionFactory factory;
 
-  private final Stage.SessionFactory factory;
-
-  public CustomerRepositoryImp(Stage.SessionFactory factory) {
-    this.factory = factory;
+  /**
+   * Instantiates a new Customer repository imp.
+   *
+   * @param factory the factory
+   */
+  public CustomerRepositoryImp(Mutiny.SessionFactory factory) {
+    this.factory = Persistence
+      .createEntityManagerFactory("postgresql-example")
+      .unwrap(Mutiny.SessionFactory.class);
   }
 
   @Override
-  public Future<List<Customer>> findAllCustomer() {
+  public Uni<List<Customer>> findAllCustomer() {
     try {
-      List<Customer> customers = new ArrayList<>();
-      factory.withSession(
-        session -> session.createQuery(SELECT_ALL_CUSTOMER,Customer.class)
-        .getResultList().thenAccept(customers::addAll)
-      ).toCompletableFuture().join();
-      return Future.succeededFuture(customers);
+      return
+        factory.withSession(
+          session -> session.createQuery(SELECT_ALL_CUSTOMER, Customer.class)
+            .getResultList())
+          .onItem()
+          .ifNotNull()
+          .transform(customers -> customers);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      return Future.failedFuture(e);
-    } finally {
-      factory.close();
-
+      return Uni.createFrom().failure(e);
     }
   }
 
   @Override
-  public Future<Customer> findCustomerById(UUID customerId) {
+  public Uni<Customer> findCustomerById(UUID customerId) {
     try {
-      Customer customer=factory.withSession(
+      return factory.withSession(
         session -> session.find(Customer.class, customerId))
-        .toCompletableFuture().join();
-      return Future.succeededFuture(customer);
-    }catch(Exception e) {
-      System.out.println(e.getMessage());
-      return Future.failedFuture(e);
-    }finally {
-      factory.close();
+        .onItem().ifNull().continueWith(Customer::new);
+    } catch (Exception e) {
+      return Uni.createFrom().failure(e);
     }
 
   }
 
   @Override
-  public Future<Customer> saveCustomer(Customer customer) {
+  public Uni<Void> saveCustomer(Customer customer) {
 
     try {
-      factory.withTransaction((session, transaction) ->
-        session.persist(Customer.class, customer)).toCompletableFuture().join();
-      return Future.succeededFuture(customer);
+      return factory.withTransaction((session, transaction) ->
+        session.persist(customer));
     } catch (Exception e) {
-      e.printStackTrace();
-      return Future.failedFuture(e);
-    } finally {
-      factory.close();
+      return Uni.createFrom().failure(e);
     }
   }
 
   @Override
-  public Future<Customer> updateCustomer(Customer customer) {
+  public Uni<Integer> updateCustomer(Customer customer) {
 
     try {
-      factory.withTransaction((session, transaction) ->
-        session.createQuery("update Customer c set c.customerName=" +customer.getCustomerName()+
-          ",c.customerEmail=" +customer.getCustomerEmail()+
-          ",c.customerPhone=" + customer.getCustomerPhone()+
-          ",c.customerDriverLicense=" +customer.getCustomerDriverLicense()+
-          ",c.customerBirth= " +customer.getCustomerBirth()+
-          " where c.customerId='"+customer.getCustomerId()+"'")
-        .executeUpdate()
-      ).toCompletableFuture().join();
-      return Future.succeededFuture(customer);
+      return factory.withTransaction((session, transaction) ->
+        session.createQuery("update Customer c set c.customerName=" + customer.getCustomerName() +
+          ",c.customerEmail=" + customer.getCustomerEmail() +
+          ",c.customerPhone=" + customer.getCustomerPhone() +
+          ",c.customerDriverLicense=" + customer.getCustomerDriverLicense() +
+          ",c.customerBirth= " + customer.getCustomerBirth() +
+          " where c.customerId='" + customer.getCustomerId() + "'")
+          .executeUpdate()
+      );
     } catch (Exception e) {
-      e.printStackTrace();
-      return Future.failedFuture(e);
-    } finally {
-      factory.close();
+      return Uni.createFrom().failure(e);
     }
   }
 
   @Override
-  public Future<Void> deleteCustomer(UUID customerId) {
+  public Uni<Integer> deleteCustomer(UUID customerId) {
 
     try {
-      int deleted = factory.withTransaction((session, transaction) -> session.createQuery(DELETE_CUSTOMER)
-        .executeUpdate()).toCompletableFuture().join();
-      if (deleted == 1) {
-        System.out.println("deleted customer");
-      }
-      return Future.succeededFuture();
+      return factory.withTransaction((session, transaction) ->
+        session.createQuery(DELETE_CUSTOMER + customerId + "'")
+          .executeUpdate());
     } catch (Exception e) {
-      e.printStackTrace();
-      return Future.failedFuture(e);
-    } finally {
-      factory.close();
+      return Uni.createFrom().failure(e);
     }
   }
 }

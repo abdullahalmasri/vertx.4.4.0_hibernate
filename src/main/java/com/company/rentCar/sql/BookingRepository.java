@@ -2,23 +2,61 @@ package com.company.rentCar.sql;
 
 import com.company.rentCar.data.BookingDetails;
 import com.company.rentCar.model.Booking;
-import io.vertx.core.Future;
+import io.smallrye.mutiny.Uni;
 
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The interface Booking repository.
+ */
 public interface BookingRepository {
 
-  Future<List<Booking>> findAll();
+  /**
+   * Find all uni.
+   *
+   * @return the uni
+   */
+  Uni<List<Booking>> findAll();
 
- Future<Booking> findByBookingId(UUID bookingId);
+  /**
+   * Find by booking id uni.
+   *
+   * @param bookingId the booking id
+   * @return the uni
+   */
+  Uni<Booking> findByBookingId(UUID bookingId);
 
- Future<Booking> saveBooking(Booking booking);
+  /**
+   * Save booking uni.
+   *
+   * @param booking the booking
+   * @return the uni
+   */
+  Uni<Void> saveBooking(Booking booking);
 
- Future<Booking> updateBooking(Booking booking);
+  /**
+   * Update booking uni.
+   *
+   * @param booking the booking
+   * @return the uni
+   */
+  Uni<Integer> updateBooking(Booking booking);
 
- Future<Void> deleteBookingById(UUID bookingId);
+  /**
+   * Delete booking by id uni.
+   *
+   * @param bookingId the booking id
+   * @return the uni
+   */
+  Uni<Integer> deleteBookingById(UUID bookingId);
 
- Future<BookingDetails> findBookingDetailsById(UUID bookingId);
+  /**
+   * Find booking details by id uni.
+   *
+   * @param bookingId the booking id
+   * @return the uni
+   */
+  Uni<BookingDetails> findBookingDetailsById(UUID bookingId);
 }
 

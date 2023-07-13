@@ -28,8 +28,8 @@
                 value="10"/>
 
       <!-- Automatic schema export -->
-      <property name="jakarta.persistence.schema-generation.database.action"
-                value="update"/>
+      <property name="javax.persistence.schema-generation.database.action"
+                value="none"/>
 
       <!-- SQL statement logging -->
       <property name="hibernate.show_sql" value="true"/>

@@ -1,20 +1,53 @@
 package com.company.rentCar.service;
 
 import com.company.rentCar.data.CustomerDTO;
+import io.smallrye.mutiny.Uni;
 import io.vertx.core.Future;
 
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The interface Customer service.
+ */
 public interface CustomerService {
 
-  Future<List<CustomerDTO>> findCustomers();
+  /**
+   * Find customers uni.
+   *
+   * @return the uni
+   */
+  Uni<List<CustomerDTO>> findCustomers();
 
-  Future<CustomerDTO> findCustomerById(UUID customerId);
+  /**
+   * Find customer by id uni.
+   *
+   * @param customerId the customer id
+   * @return the uni
+   */
+  Uni<CustomerDTO> findCustomerById(UUID customerId);
 
-  Future<CustomerDTO> saveCustomer(CustomerDTO customerDTO);
+  /**
+   * Save customer uni.
+   *
+   * @param customerDTO the customer dto
+   * @return the uni
+   */
+  Uni<Void> saveCustomer(CustomerDTO customerDTO);
 
-  Future<CustomerDTO> updateCustomer(CustomerDTO customerDTO);
+  /**
+   * Update customer uni.
+   *
+   * @param customerDTO the customer dto
+   * @return the uni
+   */
+  Uni<Integer> updateCustomer(CustomerDTO customerDTO);
 
-  Future<Void> deleteCustomer(UUID customerId);
+  /**
+   * Delete customer uni.
+   *
+   * @param customerId the customer id
+   * @return the uni
+   */
+  Uni<Integer> deleteCustomer(UUID customerId);
 }

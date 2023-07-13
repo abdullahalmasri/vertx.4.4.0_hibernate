@@ -1,20 +1,52 @@
 package com.company.rentCar.sql;
 
 import com.company.rentCar.model.Car;
-import io.vertx.core.Future;
+import io.smallrye.mutiny.Uni;
 
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The interface Car repository.
+ */
 public interface CarRepository {
 
-  Future<List<Car>> findAllCar();
+  /**
+   * Find all car uni.
+   *
+   * @return the uni
+   */
+  Uni<List<Car>> findAllCar();
 
-  Future<Car> findCarById(UUID carId);
+  /**
+   * Find car by id uni.
+   *
+   * @param carId the car id
+   * @return the uni
+   */
+  Uni<Car> findCarById(UUID carId);
 
-  Future<Car> saveCar(Car car);
+  /**
+   * Save car uni.
+   *
+   * @param car the car
+   * @return the uni
+   */
+  Uni<Void> saveCar(Car car);
 
-  Future<Car> updateCar(Car car);
+  /**
+   * Update car uni.
+   *
+   * @param car the car
+   * @return the uni
+   */
+  Uni<Integer> updateCar(Car car);
 
-  Future<Void> deleteCar(UUID carId);
+  /**
+   * Delete car uni.
+   *
+   * @param carId the car id
+   * @return the uni
+   */
+  Uni<Integer> deleteCar(UUID carId);
 }
