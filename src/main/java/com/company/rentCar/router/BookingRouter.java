@@ -31,7 +31,7 @@ public class BookingRouter implements AbstractRouter {
    *
    * @param router the router
    */
-  @Override 
+  @Override
   public void setRouter(Router router) {
     router.mountSubRouter("/api/v1", buildBookRouter());
   }

@@ -24,22 +24,24 @@ public class MainRouter {
 
   public MainRouter(Router router, Vertx vertx, BookingHandler bh, CustomerHandler ch, CarHandler cch) {
     this.router = router;
-    this.BookingRouter = new BookingRouter(bh,vertx);
-    this.CarRouter = new CarRouter(cch,vertx);
-    this.CustomerRouter = new CustomerRouter(ch,vertx);
+    this.BookingRouter = new BookingRouter(bh, vertx);
+    this.CarRouter = new CarRouter(cch, vertx);
+    this.CustomerRouter = new CustomerRouter(ch, vertx);
     this.vertx = vertx;
     this.bh = bh;
     this.ch = ch;
     this.cch = cch;
   }
 
-  public void setBookingRouter(){
+  public void setBookingRouter() {
     BookingRouter.setRouter(router);
   }
-  public void setCustomerRouter(){
+
+  public void setCustomerRouter() {
     CustomerRouter.setRouter(router);
   }
-  public void setCarRouter(){
+
+  public void setCarRouter() {
     CarRouter.setRouter(router);
   }
 }

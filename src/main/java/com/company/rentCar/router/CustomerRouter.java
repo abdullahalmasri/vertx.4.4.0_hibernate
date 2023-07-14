@@ -12,7 +12,7 @@ import static com.company.rentCar.Constrant.ConstrantQuery.APPLICATION_JSON;
 /**
  * The type Customer router.
  */
-public class CustomerRouter implements AbstractRouter{
+public class CustomerRouter implements AbstractRouter {
   private final CustomerHandler handler;
   private final Vertx vertx;
 
@@ -32,7 +32,7 @@ public class CustomerRouter implements AbstractRouter{
    *
    * @param router the router
    */
-  @Override 
+  @Override
   public void setRouter(Router router) {
     router.mountSubRouter("/api/v1", buildBookRouter());
 
