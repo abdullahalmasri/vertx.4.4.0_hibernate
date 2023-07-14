@@ -11,7 +11,7 @@ import static com.company.rentCar.Constrant.ConstrantQuery.APPLICATION_JSON;
 /**
  * The type Booking router.
  */
-public class BookingRouter implement AbstractRouter {
+public class BookingRouter implements AbstractRouter {
   private final BookingHandler handler;
   private final Vertx vertx;
 
