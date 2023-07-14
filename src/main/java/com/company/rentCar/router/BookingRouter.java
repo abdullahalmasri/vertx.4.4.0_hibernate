@@ -11,7 +11,7 @@ import static com.company.rentCar.Constrant.ConstrantQuery.APPLICATION_JSON;
 /**
  * The type Booking router.
  */
-public class BookingRouter extends AbstractRouter {
+public class BookingRouter implement AbstractRouter {
   private final BookingHandler handler;
   private final Vertx vertx;
 
@@ -31,6 +31,7 @@ public class BookingRouter extends AbstractRouter {
    *
    * @param router the router
    */
+@override 
   public void setRouter(Router router) {
     router.mountSubRouter("/api/v1", buildBookRouter());
   }
