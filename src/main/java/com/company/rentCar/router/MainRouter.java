@@ -13,9 +13,9 @@ import io.vertx.mutiny.ext.web.Router;
 
 public class MainRouter {
 
-  private final AbstractRouter BookingRouter;
-  private final AbstractRouter CarRouter;
-  private final AbstractRouter CustomerRouter;
+  private AbstractRouter BookingRouter;
+  private AbstractRouter CarRouter;
+  private AbstractRouter CustomerRouter;
   private final Vertx vertx;
   private final BookingHandler bh;
   private final CustomerHandler ch;
