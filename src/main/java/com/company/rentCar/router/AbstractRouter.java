@@ -4,11 +4,7 @@ package com.company.rentCar.router;
 
 import io.vertx.mutiny.ext.web.Router;
 
-public abstract class AbstractRouter {
-  public AbstractRouter() {
-  }
-
-  public void setRouter(Router router) {
-
-  }
+public interface AbstractRouter {
+  
+   void setRouter(Router router);
 }
