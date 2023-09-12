@@ -1,6 +1,7 @@
 package com.company.rentCar.sql;
 
 import com.company.rentCar.data.BookingDetails;
+import com.company.rentCar.data.CustomerAndCarDetails;
 import com.company.rentCar.model.Booking;
 import io.smallrye.mutiny.Uni;
 
@@ -58,5 +59,14 @@ public interface BookingRepository {
    * @return the uni
    */
   Uni<BookingDetails> findBookingDetailsById(UUID bookingId);
+
+  /**
+   * Find details of customer and car by ids uni.
+   *
+   * @param customerId the customer id
+   * @param carId      the car id
+   * @return the uni
+   */
+  Uni<CustomerAndCarDetails> findDetailsOfCustomerAndCarByIds(UUID customerId, UUID carId);
 }
 

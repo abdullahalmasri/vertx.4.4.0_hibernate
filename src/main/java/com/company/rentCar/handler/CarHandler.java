@@ -1,5 +1,6 @@
 package com.company.rentCar.handler;
 
+import com.company.rentCar.configRedis.redisConfig;
 import com.company.rentCar.data.CarDTO;
 import com.company.rentCar.service.CarService;
 import io.smallrye.mutiny.Uni;
@@ -16,7 +17,7 @@ import static com.company.rentCar.Constrant.ConstrantQuery.ID_PARAMETER;
 public class CarHandler {
 
   private final CarService service;
-
+  private final redisConfig config;
   /**
    * Instantiates a new Car handler.
    *
@@ -24,6 +25,7 @@ public class CarHandler {
    */
   public CarHandler(CarService service) {
     this.service = service;
+    this.config = new redisConfig();
   }
 
   /**
@@ -53,7 +55,11 @@ public class CarHandler {
    * @return the uni
    */
   public Uni<Void> create(RoutingContext rc) {
-
+    try {
+      config.aquire(rc.body().asJsonObject().mapTo(CarDTO.class));
+    }catch (Exception e){
+      System.out.println(e.getMessage());
+    }
     return service.saveCar(rc.body().asJsonObject().mapTo(CarDTO.class));
   }
 

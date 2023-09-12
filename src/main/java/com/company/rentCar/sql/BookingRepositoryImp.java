@@ -1,6 +1,7 @@
 package com.company.rentCar.sql;
 
 import com.company.rentCar.data.BookingDetails;
+import com.company.rentCar.data.CustomerAndCarDetails;
 import com.company.rentCar.model.Booking;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.impl.logging.Logger;
@@ -128,6 +129,26 @@ public class BookingRepositoryImp implements BookingRepository, Serializable {
             "INNER join Car cc ON b.bookingCarId=cc.carId " +
             "where b.bookingId='" + bookingId + "'", BookingDetails.class).getSingleResult()
           .onItem().ifNull().continueWith(BookingDetails::new)
+      );
+    } catch (Exception e) {
+      return Uni.createFrom().failure(e);
+    }
+  }
+
+  @Override
+  public Uni<CustomerAndCarDetails> findDetailsOfCustomerAndCarByIds(UUID customerId, UUID carId) {
+    try {
+
+
+      return factory.withSession(session ->
+        session.createQuery(
+          "SELECT new com.company.rentCar.data.CustomerAndCarDetails(cc.carId," +
+            "cc.carModel,cc.pricePerDay,cc.carType,cc.carAvailability," +
+            " c.customerId,c.customerName,c.customerEmail,c.customerPhone," +
+            "c.customerDriverLicense,c.customerBirth" +
+            ") from Car cc, Customer c" +
+            " where cc.carId ='"+carId+"' and c.customerId ='"+customerId+"'",
+          CustomerAndCarDetails.class).getSingleResultOrNull()
       );
     } catch (Exception e) {
       return Uni.createFrom().failure(e);

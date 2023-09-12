@@ -32,7 +32,7 @@ public interface BookingService {
    * Save booking uni.
    *
    * @param booking the booking
-   * @return the uni
+   * @return
    */
   Uni<Void> saveBooking(BookingDTO booking);
 
