@@ -9,19 +9,19 @@ import org.redisson.config.Config;
 
 import java.util.concurrent.TimeUnit;
 
-public class redisConfig implements redisService{
+public class redisConfig implements redisService {
 
   private final RedissonClient redisson;
   private final RLock lock;
 
 
   public redisConfig() {
-    this.redisson =  Redisson.create(setConfig());
+    this.redisson = Redisson.create(setConfig());
     this.lock = redisson.getLock("new-lock");
   }
 
 
-  private Config setConfig(){
+  private Config setConfig() {
     // 1. Create config object
     Config config = new Config();
     config.useSingleServer()
@@ -35,26 +35,28 @@ public class redisConfig implements redisService{
   @Override
   public boolean aquire(CarDTO dto) {
     boolean check = false;
-    lock.lock(100, TimeUnit.MILLISECONDS);
+
 
     try {
+      lock.tryLock(100,100, TimeUnit.MILLISECONDS);
       RBucket<CarDTO> bucket = redisson.getBucket("test");
       bucket.set(dto);
+      Thread.sleep(100);
+      System.out.println("TIME IN MILIL IN QUEUE " + System.currentTimeMillis());
 //      boolean isUpdated = bucket.compareAndSet(dto, dto);
 //      CarDTO prevObject = bucket.getAndSet(dto);
 //      boolean isSet = bucket.trySet(dto);
 //      long objectSize = bucket.size();
 
       // set with expiration
-      bucket.set(dto, 3, TimeUnit.SECONDS);
+//      bucket.set(dto, 3, TimeUnit.SECONDS);
       boolean isNewSet = bucket.trySet(dto, 10, TimeUnit.SECONDS);
       check = isNewSet;
 
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
+    } catch (InterruptedException e) {
       e.printStackTrace();
     } finally {
-      relase();
+//      relase();
     }
 
     return check;
