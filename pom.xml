@@ -46,6 +46,12 @@
       <artifactId>vertx-web-validation</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.lettuce</groupId>
+      <artifactId>lettuce-core</artifactId>
+      <version>6.1.10.RELEASE</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web-client</artifactId>
     </dependency>

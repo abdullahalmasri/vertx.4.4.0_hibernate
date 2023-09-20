@@ -3,6 +3,8 @@ package com.company.rentCar.configRedis;
 import com.company.rentCar.data.CarDTO;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.cluster.ClusterClientOptions;
+import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
@@ -17,6 +19,7 @@ import org.redisson.api.redisnode.RedisSentinel;
 import org.redisson.client.RedisConnection;
 import org.redisson.config.Config;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -53,13 +56,21 @@ public class redisConfig implements redisService {
     node3.setPassword("bitnami".toCharArray());
     RedisURI node4 = RedisURI.create("172.20.0.7", 6379);
     node4.setPassword("bitnami".toCharArray());
-    RedisURI node5 = RedisURI.create("172.20.0.8", 6379);
+    RedisURI node5 = RedisURI.create("172.20.0.3", 6379);
     node5.setPassword("bitnami".toCharArray());
-    RedisURI node6 = RedisURI.create("172.20.0.9", 6379);
+    RedisURI node6 = RedisURI.create("172.20.0.2", 6379);
     node6.setPassword("bitnami".toCharArray());
 
     RedisClusterClient clusterClient = RedisClusterClient.create(Arrays.asList(node1, node2
     ,node3,node4,node5,node6));
+    ClusterTopologyRefreshOptions topologyRefreshOptions = ClusterTopologyRefreshOptions.builder()
+      .enableAdaptiveRefreshTrigger(ClusterTopologyRefreshOptions.RefreshTrigger.MOVED_REDIRECT, ClusterTopologyRefreshOptions.RefreshTrigger.PERSISTENT_RECONNECTS)
+      .adaptiveRefreshTriggersTimeout(Duration.ofSeconds(30))
+      .build();
+
+    clusterClient.setOptions(ClusterClientOptions.builder()
+      .topologyRefreshOptions(topologyRefreshOptions)
+      .build());
     StatefulRedisClusterConnection<String, String> connection = clusterClient.connect();
     RedisAdvancedClusterCommands<String, String> syncCommands = connection.sync();
 
