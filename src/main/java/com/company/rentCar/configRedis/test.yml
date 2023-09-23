@@ -1,0 +1,98 @@
+services:
+  redis-0:
+    image: bitnami/redis-cluster
+    container_name: redis-0
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.100
+    environment:
+      - 'REDIS_PORT_NUMBER=7000'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7000'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.0.13'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17000'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7000:7000"
+      - "17000:17000"
+
+  redis-1:
+    image: bitnami/redis-cluster
+    container_name: redis-1
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.101
+    environment:
+      - 'REDIS_PORT_NUMBER=7001'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7001'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.0.13'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17001'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7001:7001"
+      - "17001:17001"
+
+  redis-2:
+    image: bitnami/redis-cluster
+    container_name: redis-2
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.102
+    environment:
+      - 'REDIS_PORT_NUMBER=7002'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7002'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.0.13'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17002'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7002:7002"
+      - "17002:17002"
+
+
+
+  redis-cluster-init:
+    image: redis:6.2
+    container_name: redis-cluster-init
+    restart: 'no'
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.106
+    depends_on:
+      - redis-0
+      - redis-1
+      - redis-2
+    entrypoint: []
+    command:
+      - /bin/bash
+      - -c
+      - redis-cli --cluster create 172.22.0.100:7000 172.22.0.101:7001 172.22.0.102:7002 172.22.0.103:7003 172.22.0.104:7004 172.22.0.105:7005 --cluster-replicas 1 --cluster-yes
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis_web
+    environment:
+      REDIS_HOSTS: "local:redis-0:7000,local:redis-1:7001,local:redis-2:7002"
+    ports:
+      - "5000:8081"
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-0
+      - redis-cluster-init
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.107
+networks:
+  redis-net:
+    name: redis-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
