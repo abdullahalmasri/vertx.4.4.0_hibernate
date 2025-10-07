@@ -73,3 +73,14 @@ in field Program Arguments
 * [Logger-Doc-if-needed](https://guozheng-ge.medium.com/logging-with-vert-x-part-1-c80eaae003f2)
 * [another-vert.x-project](https://git.yurimednikov.xyz/yuri/vertx-hibernate-tutorial-old/src/branch/master)
 * [guide-crud-api](https://thorben-janssen.com/hibernate-reactive-getting-started-guide/)
+
+
+[10/5, 7:53 PM] Träumer Informatiker ISO: curl --location --request POST 'http://localhost:9000/api/auth/logout' \
+--header 'Authorization: Bearer eyJraWQiOiJkODljNmI3ZS02Mjg5LTQyMDAtOWEzYi1iMmE0NzExMjlhOTQiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJzdXBlcmFkbWluIiwiYXVkIjoiaGF3a2FtYS1jbGllbnQiLCJuYmYiOjE3NTk2MDg4NTMsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiXSwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsImV4cCI6MTc1OTYwOTE1MywiaWF0IjoxNzU5NjA4ODUzLCJqdGkiOiJhMGY1ZTc2YS03YTNjLTRiODUtOTE2Yi1mYTEzNzNmYzA0OTIifQ.QNzbYi2E8IyYY-Sf-i7av13jT7jXn8xvstbJWji0SorAO_WmZpoQugn0JlroJQtDTg6cVPj-U4DxWAbhvtYI7BtMjZ54Dxs5S-GiOJKHpoXSPe6F1u3zbELL9mj0172G8K3_J7AuOI2lu-WmvS3su0wJ4G_n0hOIv7mze-ImII7U9yWzk7ZIwM5BWaXakXldb0XjXnMJGQgm2KvxINloKsad_h903GDLG9qbeRqhxDnmRw21dfb1kOkMBtGTh7SewTFCEWHCtMJDo8c59VSQZ5fT616y7nbDX2qVNPPY--WwW0UgynCwOn6KtD6iGQKUdMD5JZz4-JmrC33lpUQh2w' \
+--header 'Content-Type: application/json' \
+--header 'X-XSRF-TOKEN: <XSRF-TOKEN-from-cookies.txt>' \
+--header 'Cookie: cookies.txt; JSESSIONID=136B9424832E6CD10E3D15EFF958B4A5'
+[10/5, 7:54 PM] Träumer Informatiker ISO: curl --location 'http://localhost:9000/api/auth/login' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JSESSIONID=136B9424832E6CD10E3D15EFF958B4A5; access_token=eyJraWQiOiJkODljNmI3ZS02Mjg5LTQyMDAtOWEzYi1iMmE0NzExMjlhOTQiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJzdXBlcmFkbWluIiwiYXVkIjoiaGF3a2FtYS1jbGllbnQiLCJuYmYiOjE3NTk2MDg4NTMsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiXSwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsImV4cCI6MTc1OTYwOTE1MywiaWF0IjoxNzU5NjA4ODUzLCJqdGkiOiJhMGY1ZTc2YS03YTNjLTRiODUtOTE2Yi1mYTEzNzNmYzA0OTIifQ.QNzbYi2E8IyYY-Sf-i7av13jT7jXn8xvstbJWji0SorAO_WmZpoQugn0JlroJQtDTg6cVPj-U4DxWAbhvtYI7BtMjZ54Dxs5S-GiOJKHpoXSPe6F1u3zbELL9mj0172G8K3_J7AuOI2lu-WmvS3su0wJ4G_n0hOIv7mze-ImII7U9yWzk7ZIwM5BWaXakXldb0XjXnMJGQgm2KvxINloKsad_h903GDLG9qbeRqhxDnmRw21dfb1kOkMBtGTh7SewTFCEWHCtMJDo8c59VSQZ5fT616y7nbDX2qVNPPY--WwW0UgynCwOn6KtD6iGQKUdMD5JZz4-JmrC33lpUQh2w; refresh_token=-vTFE2W-zRAxz5KHJqOuqReTSzm0fk_T2RymXviw563zDUnaE2UszpxC94QR38Bebk73GNAylalLwh-BvFbcG7p44CCiRd7PoWOBFsfjuC64mgPOpg7Os_L7Bqri2IZu' \
+--data '{"username":"superadmin","password":"superadmin123"}'
